@@ -69,7 +69,7 @@ type PackageRenewalFlags struct {
 
 type PackageRenewalReminder struct {
 	Type   string
-	Period int
+	Period float64
 	UOM    string
 }
 
