@@ -32,9 +32,28 @@ type NgsspClient struct {
 type option struct {
 	dialTimeout time.Duration
 	reqTimeout  time.Duration
+	httpClient  *http.Client
 }
 
 type ClientOption func(*option)
+
+func WithDialTimeout(d time.Duration) ClientOption {
+	return func(o *option) {
+		o.dialTimeout = d
+	}
+}
+
+func WithRequestTimeout(d time.Duration) ClientOption {
+	return func(o *option) {
+		o.reqTimeout = d
+	}
+}
+
+func WithHttpClient(cl *http.Client) ClientOption {
+	return func(o *option) {
+		o.httpClient = cl
+	}
+}
 
 func NewClient(baseUrl string, options ...ClientOption) *NgsspClient {
 	opt := option{
@@ -50,16 +69,19 @@ func NewClient(baseUrl string, options ...ClientOption) *NgsspClient {
 	tr.DialContext = (&net.Dialer{Timeout: opt.dialTimeout}).DialContext
 	tr.TLSHandshakeTimeout = opt.dialTimeout
 
-	cl := &http.Client{
-		Transport: tr,
-		Timeout:   opt.reqTimeout,
+	var cl *http.Client
+	if opt.httpClient != nil {
+		cl = opt.httpClient
+	} else {
+		cl = &http.Client{
+			Transport: tr,
+			Timeout:   opt.reqTimeout,
+		}
 	}
 
 	var trimUrlEnd func(string) string
 	trimUrlEnd = func(str string) string {
-		if strings.HasSuffix(str, "/") {
-			str = str[:len(str)-1]
-		}
+		str = strings.TrimSuffix(str, "/")
 
 		if strings.HasSuffix(str, "/") {
 			return trimUrlEnd(str)
