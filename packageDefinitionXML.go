@@ -24,7 +24,7 @@ type NgsspPackageDefinition struct {
 	PriceComercial        int
 	SubscriptionPeriod    string
 	SubscriptionPeriodUOM string
-	GracePeriod           int
+	GracePeriod           StringInt
 	GracePeriodUOM        string
 	RegistrationSID       string
 	RegSubsAction         string
@@ -47,7 +47,7 @@ type PackageDefinitionFlags struct {
 type PackageRenewal struct {
 	Flags         PackageRenewalFlags
 	MaxCycle      int
-	Amount        float64
+	Amount        StringFloat64
 	SID           string
 	Period        string
 	PeriodUOM     string
